@@ -160,6 +160,7 @@ def main():
     scheduler = eval(args.scheduler, {"optim": optim, "optimizer": optimizer})
     train_transforms = eval(args.train_transforms)
     test_transforms = eval(args.test_transforms)
+    num_epochs = eval(args.epochs)
 
     print("\nDownload the train and test dataset, with transforms....")
     # train_dataset = datasets.CIFAR10('./data', train=True, download=True, transform=train_transforms)
@@ -179,7 +180,7 @@ def main():
 
     print("\nModel Training....\n")
 
-    num_epochs = 30
+    #num_epochs = 30
 
     for epoch in range(1, num_epochs+1):
         print(f'Epoch {epoch}')
