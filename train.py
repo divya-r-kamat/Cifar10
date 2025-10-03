@@ -12,6 +12,25 @@ import importlib.util
 import sys
 import os
 from pathlib import Path
+import albumentations as A
+from albumentations.pytorch.transforms import ToTensorV2
+
+horizontalflip_prob = 0.5
+shiftscalerotate_prob = 0.5
+rotate_limit = 15
+cutout_prob = 0.5
+num_holes = 1
+mean = (0.4919, 0.4829, 0.4467)
+std  = (0.2444, 0.2408, 0.2582)
+
+class AlbumentationsTransform:
+    def __init__(self, aug):
+        self.aug = aug
+
+    def __call__(self, img):
+        img = np.array(img)  # PIL -> numpy
+        return self.aug(image=img)["image"]
+
 
 # Data to plot accuracy and loss graphs
 train_losses = []
@@ -143,8 +162,10 @@ def main():
     test_transforms = eval(args.test_transforms)
 
     print("\nDownload the train and test dataset, with transforms....")
-    train_dataset = datasets.CIFAR10('./data', train=True, download=True, transform=train_transforms)
-    test_dataset = datasets.CIFAR10('./data', train=False, download=True, transform=test_transforms)
+    # train_dataset = datasets.CIFAR10('./data', train=True, download=True, transform=train_transforms)
+    # test_dataset = datasets.CIFAR10('./data', train=False, download=True, transform=test_transforms)
+    train_dataset = datasets.CIFAR10(root="./data", train=True, download=True, transform=AlbumentationsTransform(train_transforms))
+    test_dataset = datasets.CIFAR10(root="./data", train=False, download=True, transform=AlbumentationsTransform(test_transforms))
 
     # dataloader arguments - something you'll fetch these from cmdprmt
     dataloader_args = dict(shuffle=True, batch_size=128, num_workers=4, pin_memory=True) if cuda else dict(shuffle=True, batch_size=64)
